@@ -1,10 +1,10 @@
 {
-    "description": "Airpods battery indicator",
     "name": "Airpods Battery status",
+    "description": "Show Airpods battery level in top bar",
     "shell-version": [
         "3.36"
     ],
     "uuid": "airpods-battery-status@ju.wtf",
     "version": "1",
-    "url": "https://github.com/delphiki/airpods-battery-status"
+    "url": "https://github.com/delphiki/gnome-airpods-battery-status"
 }
