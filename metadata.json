@@ -1,0 +1,10 @@
+{
+    "description": "Airpods battery indicator",
+    "name": "Airpods Battery status",
+    "shell-version": [
+        "3.36"
+    ],
+    "uuid": "airpods-battery-status@ju.wtf",
+    "version": "1",
+    "url": "https://github.com/delphiki/airpods-battery-status"
+}
