@@ -10,7 +10,7 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 let box = new St.BoxLayout();
 let aggregateMenu;
 let powerIndicator;
-let apodsmonFilePath = '/tmp/apodsmon.out';
+let statusFilePath = '/tmp/airstatus.out';
 let currentStatusValue;
 let leftAirpodLabel;
 let rightAirpodLabel;
@@ -18,8 +18,10 @@ let icon;
 let caseLabel;
 let caseIcon;
 
+let loop;
+
 function getCurrentStatus() {
-	let fileContents = GLib.file_get_contents(apodsmonFilePath)[1];
+	let fileContents = GLib.file_get_contents(statusFilePath)[1];
 
 	let lines;
 	if (fileContents instanceof Uint8Array) {
@@ -28,31 +30,29 @@ function getCurrentStatus() {
 		lines = fileContents.toString().trim().split('\n');
 	}
 
-	let lastLine = lines[lines.length - 1].split(' ');
+	let lastLine = lines[lines.length - 1];
 
-	return {
-		'L': lastLine[1],
-		'R': lastLine[3],
-		'C': lastLine[5]
-	};
+	return lastLine.length > 0 ? JSON.parse(lastLine) : {};
 }
 
 function updateBatteryStatus() {
 	currentStatusValue = getCurrentStatus();
 
-	if (currentStatusValue.L !== 'NA') {
-		leftAirpodLabel.set_text(currentStatusValue.L+' %');
+	let charge = currentStatusValue.hasOwnProperty("charge") ? currentStatusValue.charge : {};
+
+	if (charge.left !== -1) {
+		leftAirpodLabel.set_text(charge.left+' %');
 	} else {
 		leftAirpodLabel.set_text('- %');
 	}
-	if (currentStatusValue.R !== 'NA') {
-		rightAirpodLabel.set_text(currentStatusValue.R+' %');
+	if (charge.right !== -1) {
+		rightAirpodLabel.set_text(charge.right+' %');
 	} else {
 		rightAirpodLabel.set_text('- %');
 	}
 
-	if (currentStatusValue.C !== 'NA') {
-		caseLabel.set_text(currentStatusValue.C+' %');
+	if (charge.case !== -1) {
+		caseLabel.set_text(charge.case+' %');
 		caseLabel.show()
 		caseIcon.show();
 	} else {
@@ -66,8 +66,6 @@ function updateBatteryStatus() {
 function init() {
 	aggregateMenu = Main.panel.statusArea["aggregateMenu"];
 	powerIndicator = aggregateMenu._power;
-
-	currentStatusValue = getCurrentStatus();
 
 	leftAirpodLabel = new St.Label({
 		text: '- %',
@@ -102,13 +100,11 @@ function init() {
 	box.add(rightAirpodLabel);
 	box.add(caseIcon);
 	box.add(caseLabel);
-
-	Mainloop.timeout_add(5000, updateBatteryStatus);
-
 }
 
 function enable() {
 	powerIndicator.insert_child_at_index(box, 0);
+	loop = Mainloop.timeout_add(5000, updateBatteryStatus);
 }
 
 function disable() {

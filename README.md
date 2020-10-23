@@ -6,11 +6,11 @@ A Gnome Shell Extension to display the battery levels of your Airpods (and case)
 
 ## Requirements
 
-Compile and install [apodsmon](https://github.com/slp/apodsmon) as a service, using `/tmp/apodsmon.out` as output file.
+Install [AirStatus](https://github.com/delphiki/AirStatus) as a service, using `/tmp/airstatus.out` as output file.
 
 ## Installation
 
-Search for "airpods battery status" on https://extensions.gnome.org/
+Search for "Airpods battery status" on https://extensions.gnome.org/
 
 OR 
 
