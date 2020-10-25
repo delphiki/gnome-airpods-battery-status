@@ -27,6 +27,10 @@ class AipodsBatteryStatus {
 	}
 
 	getCurrentStatus() {
+		if (!GLib.file_test(this._statusFilePath, GLib.FileTest.EXISTS)) {
+			return {};
+		}
+
 		let fileContents = GLib.file_get_contents(this._statusFilePath)[1];
 
 		let lines;
@@ -46,18 +50,18 @@ class AipodsBatteryStatus {
 
 		let charge = this._currentStatusValue.hasOwnProperty("charge") ? this._currentStatusValue.charge : {};
 
-		if (charge.left !== -1) {
+		if (charge.hasOwnProperty('left') && charge.left !== -1) {
 			this._leftAirpodLabel.set_text(charge.left+' %');
 		} else {
 			this._leftAirpodLabel.set_text('- %');
 		}
-		if (charge.right !== -1) {
+		if (charge.hasOwnProperty('right') && charge.right !== -1) {
 			this._rightAirpodLabel.set_text(charge.right+' %');
 		} else {
 			this._rightAirpodLabel.set_text('- %');
 		}
 
-		if (charge.case !== -1) {
+		if (charge.hasOwnProperty('case') && charge.case !== -1) {
 			this._caseLabel.set_text(charge.case+' %');
 			this._caseLabel.show()
 			this._caseIcon.show();
