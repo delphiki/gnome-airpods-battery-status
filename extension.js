@@ -125,17 +125,15 @@ class AipodsBatteryStatus {
     }
 }
 
-function init() {
+function enable() {
     let menu = Main.panel.statusArea["aggregateMenu"]._power;
     batteryStatus = new AipodsBatteryStatus(menu, statusFilePath);
-}
-
-function enable() {
     batteryStatus.enable();
 }
 
 function disable() {
     batteryStatus.disable();
+    batteryStatus = null;
 }
 
 let Log = function(msg) {
