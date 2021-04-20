@@ -3,7 +3,8 @@
     "description": "Show Airpods battery level in top bar",
     "shell-version": [
         "3.36",
-        "3.38"
+        "3.38",
+        "40.0"
     ],
     "uuid": "airpods-battery-status@ju.wtf",
     "version": "1",
