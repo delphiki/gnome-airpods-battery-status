@@ -4,7 +4,8 @@
     "shell-version": [
         "3.36",
         "3.38",
-        "40"
+        "40",
+        "41"
     ],
     "uuid": "airpods-battery-status@ju.wtf",
     "version": "1",
