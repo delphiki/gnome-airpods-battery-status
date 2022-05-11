@@ -5,9 +5,10 @@
         "3.36",
         "3.38",
         "40",
-        "41"
+        "41",
+        "42"
     ],
     "uuid": "airpods-battery-status@ju.wtf",
-    "version": "6",
+    "version": "7",
     "url": "https://github.com/delphiki/gnome-airpods-battery-status"
 }
