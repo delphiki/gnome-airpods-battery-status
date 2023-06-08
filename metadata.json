@@ -2,7 +2,8 @@
     "name": "Airpods Battery status",
     "description": "Show Airpods battery level in top bar\n\n/!\\ Needs AirStatus to work: https://github.com/delphiki/AirStatus",
     "shell-version": [
-        "43"
+        "43",
+        "44"
     ],
     "uuid": "airpods-battery-status@ju.wtf",
     "version": "8",
