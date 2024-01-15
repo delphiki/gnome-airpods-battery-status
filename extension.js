@@ -1,22 +1,29 @@
 /**
  * Created by Julien "delphiki" Villetorte (delphiki@protonmail.com)
  */
-const Main = imports.ui.main;
-const { Clutter, GLib, St, Gio } = imports.gi;
-const ByteArray = imports.byteArray;
-const Mainloop = imports.mainloop;
-const PanelMenu = imports.ui.panelMenu;
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const PopupMenu = imports.ui.popupMenu;
+ 
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import St from 'gi://St';
 
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 let batteryStatus;
 let statusFilePath = '/tmp/airstatus.out';
 let cacheTTL = 3600;
 
+let Log = function(msg) {
+    log("[Airpods Battery Status] " + msg);
+}
+
 class AipodsBatteryStatus {
-    constructor(filePath) {
+    constructor(filePath, extensionObject) {
         this._statusFilePath = filePath;
+        this._extensionObject = extensionObject;
         this._panelMenuButton = null;
 
         this._timer = null;
@@ -60,7 +67,9 @@ class AipodsBatteryStatus {
 
         let lines;
         if (fileContents instanceof Uint8Array) {
-            lines = ByteArray.toString(fileContents).trim().split('\n');
+            let decoder = new TextDecoder('utf-8');
+            let decodedString = decoder.decode(fileContents);
+            lines = decodedString.trim().split('\n');
         } else {
             lines = fileContents.toString().trim().split('\n');
         }
@@ -147,7 +156,7 @@ class AipodsBatteryStatus {
         });
 
         this._icon = new St.Icon({
-            gicon: Gio.icon_new_for_string(Me.path + '/airpods.svg'),
+            gicon: Gio.icon_new_for_string(this._extensionObject.path + '/airpods.svg'),
             style_class: "system-status-icon",
         });
 
@@ -158,7 +167,7 @@ class AipodsBatteryStatus {
         });
 
         this._caseIcon = new St.Icon({
-            gicon: Gio.icon_new_for_string(Me.path + '/case.svg'),
+            gicon: Gio.icon_new_for_string(this._extensionObject.path + '/case.svg'),
             style_class: "system-status-icon",
         });
 
@@ -226,7 +235,7 @@ class AipodsBatteryStatus {
         Log("enable");
         this.updateBatteryStatus();
 
-        this._timer = Mainloop.timeout_add_seconds(10, () => {
+        this._timer = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 10, () => {
             this.updateBatteryStatus();
             return GLib.SOURCE_CONTINUE;
         });
@@ -239,24 +248,21 @@ class AipodsBatteryStatus {
         Main.panel.statusArea["AirpodsBatteryStatus"] = null;
 
         if (this._timer) {
-            Mainloop.source_remove(this._timer);
+            GLib.source_remove(this._timer);
             this._timer = null;
         }
     }
 }
 
-function enable() {
-    batteryStatus = new AipodsBatteryStatus(statusFilePath);
-    Main.panel.statusArea["AirpodsBatteryStatus"] = null;
+export default class BluetoothBatteryMeterExtension extends Extension {
+    enable() {
+        batteryStatus = new AipodsBatteryStatus(statusFilePath, this);
+        Main.panel.statusArea["AirpodsBatteryStatus"] = null;
+        batteryStatus.enable();
+    }
 
-    batteryStatus.enable();
-}
-
-function disable() {
-    batteryStatus.disable();
-    batteryStatus = null;
-}
-
-let Log = function(msg) {
-    log("[Airpods Battery Status] " + msg);
+    disable() {
+        batteryStatus.disable();
+        batteryStatus = null;
+    }
 }
